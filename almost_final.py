@@ -60,11 +60,11 @@ try:
 
     for i in graph.keys():
       best_point=i
-     # p=int(df1.loc[df1.index==i].sum().values)
+      p=int(df1.loc[df1.index==i].sum().values)
       print(p)
       print(len(nodes))
 
-      if k<9:
+      if df1.at[i, k]<9:
         best_point, time=dijkstra(graph, best_point)
         df.at[i, j]=best_point
         df1.at[i, k] =df1.loc[i]+time#+time_task #вот как сюда время выполнения таски добавить, пока хз
