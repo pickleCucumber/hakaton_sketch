@@ -1,69 +1,37 @@
-'''все точки=[ ]
-пока не х>=45
-для каждого сотрудника ближайшая точка
-пометить как пройденная везде'''
-import heapq
+#есть блять
+import pandas as pd
+df_sotrudnik=pd.DataFrame(columns=['fio', 'location', 'grade'])
+df_tasks=pd.DataFrame(columns=['name', 'priority', 'time_done', 'filter1', 'filter2', 'need_grade'])
+df_points=pd.DataFrame(columns=['num', 'adress', 'has_materials','date_conn', 'date_after_issued', 'cnt_approved', 'cnt_issued'])
 
-
+grade=['Синьор' 'Мидл', 'Джун']
+filter={'Только синьор':'df_sotrudnik.loc[df_sotrudnik.grade=="Синьор"]',
+'Синьор или мидл':'df_sotrudnik.loc[(df_sotrudnik.grade=="Синьор")|df_sotrudnik.grade=="Мидл"]',
+'Все уровни':'df_sotrudnik.loc[(df_sotrudnik.grade=="Синьор")|(df_sotrudnik.grade=="Мидл")|{df_sotrudnik.grade=="Джун"]'}
 priority={'Высокий':0.74, 'Средний':1, 'Низкий':1.25}
+tasks=['1', '2', '3', '4', '5']
+time_complite=[1,2, 1.5, 4]
+time_drive_to_point=[1.1, 0.5, 2, 1]
 
-all_point=[]
-h=45
-def dijkstra(graph, start) :
-    distances = {vertex: float('infinity') for vertex in graph}
-    distances[start] = 0
-    queue = [(0, start)]
-    all_point = []
-    h = 45
-
-    while queue:
-        current_distance, current_vertex = heapq.heappop(queue)
-
-        # Обрабатываем только вершину с наименьшим расстоянием
-        if current_distance > distances[current_vertex]:
-            continue
-        print(graph[current_vertex])
-        for neighbor, weight in graph[current_vertex]:#.items():
-            distance = current_distance + weight#заменить priority.values()
-
-            # Рассматриваем этот новый путь только в том случае, если он лучше любого пути, который мы нашли до сих пор
-            if distance < distances[neighbor]:
-                distances[neighbor] = distance
-                heapq.heappush(queue, (distance, neighbor))
-        #all_point = all_point.remove(neighbor) удаляем нахуй пройденную точку из начального списка нод
-        h=h-distance#-time_on_point
-    return distances
-
- # тут надо доделать тип словарь для каждой начальной локации и присобачить как-нить чтобы время
-'''graph = {
-    'A': {'B': 1, 'C': 3},
-    'B': {'A': 1, 'C': 2},
-    'C': {'A': 3, 'B': 2}
-}'''
-
-nodes = ['ул. Российская, д. 418',"ул. им. Володи Головатого, д. 313",'ул. Красная, д. 145', 'ул. им. 40-летия Победы, д. 20/1', 'ул. им. Атарбекова, д. 24','ул. им. Героя Аверкиева А.А., д. 8',
-'ул. им. Героя Аверкиева А.А., д. 8/1 к. мая, кв. 268','ул. им. Тургенева, д. 106','ул. Красных Партизан, д. 117','ул. Северная, д. 389']
-'''''ул. Уральская, д. 166/3','ул. Северная, д. 524','ул. им. Кирилла Россинского, д. 61/1', 'ул. Коммунаров, д. 258',
-'ул. им. Дзержинского, д. 100','ул. Северная, д. 326','ул. им. 40-летия Победы, д. 34',
-'ул. Красная, д. 176','ул. Уральская, д. 79/1','ул. Северная, д. 326','ул. Красная, д. 149', 'ул. Целиноградская, д. 6/1',
-'ул. им. Дзержинского, д. 100','ул. Российская, д. 418',"ул. им. Володи Головатого, д. 313",'ул. Красная, д. 145']'''
-location=['ул. Российская, д. 418',"ул. им. Володи Головатого, д. 313",'ул. Красная, д. 145']
-distances=[1, 5, 2.5, 4, 2, 1.5, 3, 2, 5, 3]
+filter1={'Дата выдачи последней карты более 7 дней назад, при этом есть одобренные заявки':'(df_points.date_after_issued>7) and (df_points.cnt_approved>0)',
+        'Отношение кол-ва выданных карт к одобренным заявкам менее 50%, если выдано больше 0 карт':'(df_points.cnt_issued>0) and (df_points.cnt_approved>==issued*2)',
+      'Точка подключена вчера':'df_points.date_conn=="Вчера"', 'Дата выдачи последней карты более 14 дней назад':'df_points.date_after_issued>14',
+         'Карты и материалы не доставлялись':"df_points.has_materials=='Нет'"}
+filter2={'Дата выдачи последней карты более 7 дней назад, при этом есть одобренные заявки':'(df_points.date_after_issued>7) and (df_points.cnt_approved>0)',
+        'Отношение кол-ва выданных карт к одобренным заявкам менее 50%, если выдано больше 0 карт':'(df_points.cnt_issued>0) and (df_points.cnt_approved>==issued*2)',
+      'Точка подключена вчера':'df_points.date_conn=="Вчера"'}
+df_tasks.merge(df_sotrudnik, left_on='need_grade', right_on=filter(df_tasks.need_grade).valus(), how='left')
 
 
-loc=dict(zip(nodes, distances))
-graph = {}
-for i in range(len(location)):
-    print(location[i])
-    print(loc)
-    graph[location[i]].appent(loc)
+df_tasks.merge(df_sotrudnik, left_on='need_grade', right_on=filter('need_grade'), how='left')
+
+#
+#df_tasks merge df_point on filters.value merge df_sotrudnik on grade надеюсь тут хотя бы идея понятна
+
+res = []
 
 
 
-print(graph)
-#graph= {zip(location): loc}
-while (len(nodes)!=0) or h<1: #крч для каждого сотрудника считаем ближайшую точку динамически и апдейтим начальную точку
-    for i in graph.keys():
-        print(dijkstra(graph, i))
-#print(graph.keys())
-#print(dijkstra(graph, i))
+
+
+
